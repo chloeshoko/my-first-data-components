@@ -181,7 +181,7 @@ let searchQuery = $state("");
   input[type="text"] {
   display: block;
   padding: 0.375rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.876rem;
   border: 1px solid #ccc;
   border-radius: 3px;
 }
