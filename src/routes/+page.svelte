@@ -8,11 +8,13 @@ This is your page!
   import ArticleBody from '$lib/components/ArticleBody.svelte';
   import Image from '$lib/components/Image.svelte';
   import RelatedLinks from '$lib/components/RelatedLinks.svelte';
+  import RestaurantTable from '$lib/components/RestaurantTable.svelte';
 
   // Article metadata
   let headline = 'Become a force for good. Join our next class.';
   let byline = 'NYCity News Service';
   let pubDate = '2026-01-31';
+  
 
   // Related stories
   const relatedStories = [
@@ -20,7 +22,28 @@ This is your page!
     { headline: 'How to install, configure and use Visual Studio Code, GitHub and Copilot', href: 'https://palewi.re/docs/coding-the-news/scripts/week-1/' },
     { headline: "How to publish a website with Node.JS and GitHub Actions", href:"https://palewi.re/docs/coding-the-news/scripts/week-2/"},
   ];
+
+  let { data } = $props();
+$inspect(data);
+
+let selectedBorough = $state("");
+let selectedCuisine = $state("");
+let restaurants = $derived(
+  data.restaurants.filter(r => {
+    if (selectedBorough !== '' && r.boro !== selectedBorough) return false;
+    if (selectedCuisine !== '' && r.cuisine_description !== selectedCuisine) return false;
+    if (searchQuery !== '' && !r.dba.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  })
+);
+let displayed = $derived(restaurants.slice(0, 100));
+let cuisines = $derived(
+  [...new Set(data.restaurants.map(r => r.cuisine_description))].sort()
+);
+let searchQuery = $state("");
 </script>
+
+
 
 <!-- This sets the page title in the browser tab -->
 <svelte:head>
@@ -83,6 +106,33 @@ This is your page!
     <p>
       We invite you to be part of our world.
     </p>
+
+    <div class="filters">
+  <label for="borough">Borough</label>
+  <select id="borough" bind:value={selectedBorough}>
+    <option value="">All boroughs</option>
+    <option value="Manhattan">Manhattan</option>
+    <option value="Brooklyn">Brooklyn</option>
+    <option value="Queens">Queens</option>
+    <option value="Bronx">Bronx</option>
+    <option value="Staten Island">Staten Island</option>
+  </select>
+
+  <label for="cuisine">Cuisine</label>
+  <select id="cuisine" bind:value={selectedCuisine}>
+    <option value="">All cuisines</option>
+    {#each cuisines as cuisine}
+      <option value={cuisine}>{cuisine}</option>
+    {/each}
+  </select>
+  <div>
+    <label for="search">Search by name</label>
+    <input id="search" type="text" bind:value={searchQuery} placeholder="e.g. Pizza" />
+  </div>
+</div> 
+
+<p class="count">Showing {displayed.length} of {restaurants.length} restaurants</p>
+<RestaurantTable data={displayed} />
   </ArticleBody>
 
   <!-- Related Stories: Links to other articles -->
@@ -97,5 +147,48 @@ This is your page!
   /* Styles here only apply to this page */
   .container {
     padding: var(--spacing-lg) var(--spacing-md);
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    padding: 1rem;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  select {
+    display: block;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    
+  }
+
+  input[type="text"] {
+  display: block;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+  .count {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0 0 0.5rem;
   }
 </style>
