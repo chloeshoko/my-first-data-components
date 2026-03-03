@@ -28,6 +28,7 @@ $inspect(data);
 
 let selectedBorough = $state("");
 let selectedCuisine = $state("");
+let searchQuery = $state("");
 let restaurants = $derived(
   data.restaurants.filter(r => {
     if (selectedBorough !== '' && r.boro !== selectedBorough) return false;
