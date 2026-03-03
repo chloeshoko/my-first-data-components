@@ -41,7 +41,6 @@ let displayed = $derived(restaurants.slice(0, 100));
 let cuisines = $derived(
   [...new Set(data.restaurants.map(r => r.cuisine_description))].sort()
 );
-let searchQuery = $state("");
 </script>
 
 
