@@ -29,11 +29,13 @@ $inspect(data);
 let selectedBorough = $state("");
 let selectedCuisine = $state("");
 let searchQuery = $state("");
+let selectedGrade = $state("")
 let restaurants = $derived(
   data.restaurants.filter(r => {
     if (selectedBorough !== '' && r.boro !== selectedBorough) return false;
     if (selectedCuisine !== '' && r.cuisine_description !== selectedCuisine) return false;
     if (searchQuery !== '' && !r.dba.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (selectedGrade !== '' && r.grade !== selectedGrade) return false;
     return true;
   })
 );
@@ -41,13 +43,7 @@ let displayed = $derived(restaurants.slice(0, 100));
 let cuisines = $derived(
   [...new Set(data.restaurants.map(r => r.cuisine_description))].sort()
 );
-let letterGrade = 
-  $derived(
-    data.restaurants.reduce((acc, r) => {
-      acc[r.dba] = r.grade;
-      return acc;
-    }, {})
-  );
+let grades = $derived ([...new Set(data.restaurants.map(r => r.grade))].sort());
 </script>
 
 
@@ -136,6 +132,14 @@ let letterGrade =
     <label for="search">Search by name</label>
     <input id="search" type="text" bind:value={searchQuery} placeholder="e.g. Pizza" />
   </div>
+  <div>
+    <label for="grade">Grade</label>
+    <select id="grade" bind:value={selectedGrade}>
+      <option value="">All grades</option>
+      {#each grades as grade}
+        <option value={grade}>{grade}</option>
+      {/each}
+    </select>
 </div> 
 
 <p class="count">Showing {displayed.length} of {restaurants.length} restaurants</p>
@@ -182,6 +186,7 @@ let letterGrade =
     font-size: 0.875rem;
     border: 1px solid #ccc;
     border-radius: 3px;
+    max-width: 125px;
     
   }
 
