@@ -41,6 +41,13 @@ let displayed = $derived(restaurants.slice(0, 100));
 let cuisines = $derived(
   [...new Set(data.restaurants.map(r => r.cuisine_description))].sort()
 );
+let letterGrade = 
+  $derived(
+    data.restaurants.reduce((acc, r) => {
+      acc[r.dba] = r.grade;
+      return acc;
+    }, {})
+  );
 </script>
 
 
