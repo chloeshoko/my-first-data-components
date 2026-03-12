@@ -9,6 +9,8 @@ This is your page!
   import Image from '$lib/components/Image.svelte';
   import RelatedLinks from '$lib/components/RelatedLinks.svelte';
   import RestaurantTable from '$lib/components/RestaurantTable.svelte';
+  import BigNumber from '../lib/components/BigNumber.svelte';
+  import Dashboard from '../lib/components/Dashboard.svelte'; 
 
   // Article metadata
   let headline = 'Become a force for good. Join our next class.';
@@ -39,6 +41,9 @@ let restaurants = $derived(
     return true;
   })
 );
+  let aCount = $derived(restaurants.filter(r => r.grade === 'A').length);
+  let bCount = $derived(restaurants.filter(r => r.grade === 'B').length);
+  let cCount = $derived(restaurants.filter(r => r.grade === 'C').length);
 let displayed = $derived(restaurants.slice(0, 100));
 let cuisines = $derived(
   [...new Set(data.restaurants.map(r => r.cuisine_description))].sort()
@@ -140,9 +145,15 @@ let grades = $derived ([...new Set(data.restaurants.map(r => r.grade))].sort());
         <option value={grade}>{grade}</option>
       {/each}
     </select>
-</div> 
+  </div>
+  </div>
 
 <p class="count">Showing {displayed.length} of {restaurants.length} restaurants</p>
+<Dashboard>
+  <BigNumber number={aCount} label="A grades" />
+  <BigNumber number={bCount} label="B grades" />
+  <BigNumber number={cCount} label="C grades" />
+</Dashboard>
 <RestaurantTable data={displayed} />
   </ArticleBody>
 
